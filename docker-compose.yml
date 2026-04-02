@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./apps/backend:/app/apps/backend
+      - /app/apps/backend/node_modules
+    environment:
+      - NODE_ENV=development
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/frontend:/app/apps/frontend
+      - /app/apps/frontend/node_modules
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend

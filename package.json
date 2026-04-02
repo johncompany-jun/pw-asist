@@ -1,0 +1,12 @@
+{
+  "name": "pw-asist",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:backend": "bun --filter backend run dev",
+    "dev:frontend": "bun --filter frontend run dev",
+    "build": "bun run --filter '*' build"
+  }
+}
