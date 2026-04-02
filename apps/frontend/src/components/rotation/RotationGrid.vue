@@ -22,6 +22,7 @@ const intervalMinutes = ref<10 | 15 | 20>(15)
 const grid = ref<Record<number, Record<number, string>>>({})
 const localUsers = ref<any[]>([])
 const saving = ref(false)
+const saveError = ref('')
 
 const dutyOptions = [
   { value: 'service', label: '奉仕', color: 'bg-violet-600/20 text-violet-300 border-violet-500/40' },
@@ -65,6 +66,7 @@ function dutyLabel(duty: string) { return dutyOptions.find(d => d.value === duty
 async function save() {
   if (!props.canEdit) return
   saving.value = true
+  saveError.value = ''
   try {
     const slots: any[] = []
     for (const [slotIndexStr, users] of Object.entries(grid.value)) {
@@ -72,7 +74,7 @@ async function save() {
         slots.push({ slotIndex: Number(slotIndexStr), userId: Number(userIdStr), duty })
       }
     }
-    await fetch(`${API}/api/rotations`, {
+    const res = await fetch(`${API}/api/rotations`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...auth() },
       body: JSON.stringify({
@@ -85,7 +87,14 @@ async function save() {
         userOrder: localUsers.value.map(u => u.id),
       }),
     })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}))
+      saveError.value = body.message ?? `保存に失敗しました (${res.status})`
+      return
+    }
     emit('saved')
+  } catch {
+    saveError.value = '通信エラーが発生しました'
   } finally {
     saving.value = false
   }
@@ -157,6 +166,7 @@ watch(() => props.assignedUsers, (users) => {
         </select>
       </div>
       <div class="flex-1" />
+      <div v-if="saveError" class="text-red-400 text-xs">{{ saveError }}</div>
       <button
         v-if="canEdit"
         @click="save"

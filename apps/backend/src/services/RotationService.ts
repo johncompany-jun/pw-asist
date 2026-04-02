@@ -71,9 +71,12 @@ export const RotationService = {
     }
 
     if (data.slots && data.slots.length > 0) {
-      await db.insert(rotationSlots).values(
-        data.slots.map((s: any) => ({ rotationId, slotIndex: s.slotIndex, userId: s.userId, duty: s.duty }))
-      )
+      const rows = data.slots.map((s: any) => ({ rotationId, slotIndex: s.slotIndex, userId: s.userId, duty: s.duty }))
+      // D1 のバインドパラメータ上限（100）に対して1スロット4カラムのため25件ずつバッチ実行
+      const BATCH_SIZE = 25
+      for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+        await db.insert(rotationSlots).values(rows.slice(i, i + BATCH_SIZE))
+      }
     }
   },
 

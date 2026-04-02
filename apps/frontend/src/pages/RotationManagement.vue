@@ -150,7 +150,6 @@ onMounted(init)
     </div>
 
     <div v-if="!selectedSpotId && state.user?.isAdmin" class="text-zinc-500 text-sm">スポットを選択してください。</div>
-    <div v-else-if="loading" class="text-zinc-500 text-sm py-8 text-center">読み込み中...</div>
 
     <div v-else-if="selectedSpotId" class="flex flex-col gap-4">
       <!-- メール送信ボタン -->
@@ -164,7 +163,9 @@ onMounted(init)
         </button>
       </div>
 
+      <div v-if="loading" class="text-zinc-500 text-sm py-2 text-center">読み込み中...</div>
       <RotationGrid
+        v-else
         :date="selectedDate"
         :spot-id="selectedSpotId"
         :assigned-users="assignedUsers"
