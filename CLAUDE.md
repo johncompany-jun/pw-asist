@@ -203,8 +203,10 @@ npx wrangler deploy
 
 ```bash
 cd apps/backend
-npx wrangler d1 migrations apply pw-asist
+npx wrangler d1 migrations apply pw-asist --remote
 ```
+
+> **注意**: `--remote` を付けないとローカルDBにのみ適用されて本番に反映されない
 
 ## 環境変数
 
