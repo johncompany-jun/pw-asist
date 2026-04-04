@@ -14,6 +14,7 @@ const menuItems = [
   { id: 'users', label: 'ユーザー管理', icon: 'group', adminOnly: true },
   { id: 'schedules', label: 'スケジュール管理', icon: 'event' },
   { id: 'rotation', label: 'ローテーション管理', icon: 'autorenew' },
+  { id: 'vacation', label: '休み申請', icon: 'event_busy' },
   { id: 'profile', label: 'プロフィール', icon: 'person' },
 ]
 

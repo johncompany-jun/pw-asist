@@ -10,6 +10,7 @@ import spotsRouter from './routes/spots'
 import schedulesRouter from './routes/schedules'
 import rotationsRouter from './routes/rotations'
 import themesRouter from './routes/themes'
+import vacationsRouter from './routes/vacations'
 
 export function createApp(corsOrigin?: string, resendApiKey?: string, resendFromEmail?: string) {
   const app = new Hono()
@@ -106,6 +107,7 @@ export function createApp(corsOrigin?: string, resendApiKey?: string, resendFrom
     return c.json(await RotationService.findMyRotations(payload.id))
   })
   app.route('/api/themes', themesRouter)
+  app.route('/api/vacations', vacationsRouter)
 
   return app
 }

@@ -34,15 +34,18 @@ apps/
         ScheduleService.ts
         RotationService.ts
         ThemeService.ts
+        VacationService.ts
       routes/            # APIルート
         users.ts
         spots.ts
         schedules.ts
         rotations.ts
         themes.ts
+        vacations.ts
       __tests__/         # サービス単体テスト
     migrations/
       0000_initial.sql   # 初期スキーマ
+      0001_vacation_requests.sql  # 休み申請テーブル
     wrangler.toml
   frontend/
     src/
@@ -64,12 +67,13 @@ apps/
 ## データベーススキーマ（Drizzle ORM）
 
 ```
-users           id, email, name, password_hash, is_admin, gender(male/female), created_at
-spots           id, name, address, description, created_at
-schedules       id, date, spot_id, user_id, is_lead, note, created_at
-rotations       id, date, spot_id, starts_at, ends_at, interval_minutes, user_order(JSON), created_at
-rotation_slots  id, rotation_id, slot_index, user_id, duty(service/watching/break)
-themes          id, week_start, title, body, created_at
+users              id, email, name, password_hash, is_admin, gender(male/female), created_at
+spots              id, name, address, description, created_at
+schedules          id, date, spot_id, user_id, is_lead, note, created_at
+rotations          id, date, spot_id, starts_at, ends_at, interval_minutes, user_order(JSON), created_at
+rotation_slots     id, rotation_id, slot_index, user_id, duty(service/watching/break)
+themes             id, week_start, title, body, created_at
+vacation_requests  id, user_id, date, comment, created_at  ※ UNIQUE(user_id, date)
 ```
 
 ## APIエンドポイント一覧
@@ -121,6 +125,15 @@ POST   /api/themes           作成/更新（admin only）
 DELETE /api/themes/:id       削除（admin only）
 ```
 
+**休み申請**
+```
+GET    /api/vacations/my          自分の申請一覧（ログイン済み）
+POST   /api/vacations             申請作成/更新（同日はupsert）
+DELETE /api/vacations/:id         申請取消（本人 or admin）
+GET    /api/vacations?month=      月別全申請（admin only）
+GET    /api/vacations/date?date=  日付別全申請（admin only、配置調整画面用）
+```
+
 ## フロントエンド ページ一覧
 
 | ページ | ファイル | 対象 | 説明 |
@@ -131,6 +144,7 @@ DELETE /api/themes/:id       削除（admin only）
 | スケジュール管理 | ScheduleManagement.vue | admin | カレンダー概要 / 配置調整テーブル（2タブ） |
 | ローテーション管理 | RotationManagement.vue | admin + 責任者 | 時間×ユーザーのグリッド編集 |
 | テーマ管理 | ThemeManagement.vue | admin | 週テーマCRUD |
+| 休み申請 | VacationRequest.vue | 全員 | 休み希望の申請フォーム + 自分の申請履歴 |
 | プロフィール | Profile.vue | 全員 | アカウント情報 + パスワード変更 |
 | ログイン | Login.vue | 未認証 | メール + パスワード認証 |
 
@@ -141,7 +155,7 @@ DELETE /api/themes/:id       削除（admin only）
 | ロール | 権限 |
 |--------|------|
 | Anonymous | ログイン画面のみ |
-| User | Dashboard, Profile, 自分のスケジュール/ローテーション閲覧 |
+| User | Dashboard, Profile, VacationRequest, 自分のスケジュール/ローテーション閲覧 |
 | Admin | 全機能（UserManagement, ThemeManagement, ScheduleManagement配置調整含む） |
 | Lead（責任者） | 担当スポットのローテーション編集可 |
 

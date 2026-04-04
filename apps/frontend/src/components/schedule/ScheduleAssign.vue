@@ -10,6 +10,7 @@ interface KanbanUser {
   gender: string
   isLead: boolean
   scheduleId?: number
+  hasVacationRequest?: boolean
 }
 
 interface KanbanColumn {
@@ -32,6 +33,14 @@ const { authHeaders: auth } = useApi()
 const assignDate = ref(new Date().toISOString().slice(0, 10))
 const kanbanColumns = ref<KanbanColumn[]>([])
 const saving = ref(false)
+const vacationUserIds = ref<Set<number>>(new Set())
+
+async function fetchVacations(date: string) {
+  const res = await fetch(`${API}/api/vacations/date?date=${date}`, { headers: auth() })
+  if (!res.ok) return
+  const data: { userId: number }[] = await res.json()
+  vacationUserIds.value = new Set(data.map(v => v.userId))
+}
 
 function buildKanban() {
   const dateSchedules = props.schedules.filter(s => s.date === assignDate.value)
@@ -55,9 +64,13 @@ function buildKanban() {
       gender: user.gender,
       isLead: schedule?.isLead ?? false,
       scheduleId: schedule?.id,
+      hasVacationRequest: vacationUserIds.value.has(user.id),
     }
-    if (!schedule) cols[0].users.push(ku)
-    else if (schedule.spotId === null) cols[cols.length - 1].users.push(ku)
+    if (!schedule) {
+      // 申請あり → 休み列、なし → 未アサイン列
+      if (ku.hasVacationRequest) cols[cols.length - 1].users.push(ku)
+      else cols[0].users.push(ku)
+    } else if (schedule.spotId === null) cols[cols.length - 1].users.push(ku)
     else {
       const col = cols.find(c => c.spotId === schedule.spotId)
       if (col) col.users.push(ku)
@@ -106,7 +119,12 @@ async function saveAll() {
   }
 }
 
-watch([() => props.schedules, () => props.spots, () => props.users, assignDate], buildKanban, { immediate: true })
+watch(assignDate, async (date) => {
+  await fetchVacations(date)
+  buildKanban()
+}, { immediate: true })
+
+watch([() => props.schedules, () => props.spots, () => props.users], buildKanban)
 </script>
 
 <template>
@@ -185,6 +203,11 @@ watch([() => props.schedules, () => props.spots, () => props.users, assignDate],
             >
               <span :class="['w-1 self-stretch rounded-full shrink-0', user.gender === Gender.MALE ? 'bg-blue-400' : 'bg-pink-400']" />
               <span class="text-xs text-zinc-200 flex-1 min-w-0 truncate">{{ user.name }}</span>
+              <span
+                v-if="user.hasVacationRequest && !user.scheduleId"
+                title="休み申請あり"
+                class="shrink-0 w-2 h-2 rounded-full bg-amber-400"
+              />
               <button
                 v-if="col.spotId !== null && user.gender === Gender.MALE"
                 @click="toggleLead(col, user)"

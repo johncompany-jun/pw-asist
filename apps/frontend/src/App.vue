@@ -10,6 +10,7 @@ import Profile from './pages/Profile.vue'
 import ScheduleManagement from './pages/ScheduleManagement.vue'
 import RotationManagement from './pages/RotationManagement.vue'
 import ThemeManagement from './pages/ThemeManagement.vue'
+import VacationRequest from './pages/VacationRequest.vue'
 import Sidebar from './components/Sidebar.vue'
 
 const { state, logout } = useAuth()
@@ -23,6 +24,7 @@ const pageTitle = computed(() => {
     themes: 'テーマ管理',
     schedules: 'スケジュール管理',
     rotation: 'ローテーション管理',
+    vacation: '休み申請',
     profile: 'プロフィール',
   }
   return titles[currentView.value] ?? ''
@@ -71,6 +73,7 @@ const pageTitle = computed(() => {
         <Profile v-else-if="currentView === 'profile'" />
         <ScheduleManagement v-else-if="currentView === 'schedules'" />
         <RotationManagement v-else-if="currentView === 'rotation'" />
+        <VacationRequest v-else-if="currentView === 'vacation'" />
       </main>
     </div>
   </div>

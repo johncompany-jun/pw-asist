@@ -56,6 +56,14 @@ export const themes = sqliteTable('themes', {
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
 });
 
+export const vacationRequests = sqliteTable('vacation_requests', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').notNull().references(() => users.id),
+  date: text('date').notNull(),
+  comment: text('comment'),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`).notNull(),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Schedule = typeof schedules.$inferSelect;
