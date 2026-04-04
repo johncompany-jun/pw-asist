@@ -189,7 +189,7 @@ bun run d1:migrate         # 本番
 ```bash
 cd apps/frontend
 bun run build
-npx wrangler pages deploy dist --project-name pw-asist-frontend
+npx wrangler pages deploy dist --project-name pw-asist-frontend --branch production
 ```
 
 ### バックエンド（Cloudflare Workers）
