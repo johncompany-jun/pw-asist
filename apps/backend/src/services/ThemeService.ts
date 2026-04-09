@@ -1,6 +1,6 @@
 import { db } from '../db'
 import { themes } from '../db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, desc } from 'drizzle-orm'
 
 function getWeekStart(date: Date = new Date()): string {
   const d = new Date(date)
@@ -17,7 +17,7 @@ export const ThemeService = {
   },
 
   async findAll() {
-    return db.select().from(themes).orderBy(themes.weekStart)
+    return db.select().from(themes).orderBy(desc(themes.weekStart))
   },
 
   async upsert(data: { weekStart?: string; title: string; body?: string | null }) {
