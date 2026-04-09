@@ -45,7 +45,7 @@ export const rotationSlots = sqliteTable('rotation_slots', {
   rotationId: integer('rotation_id').notNull().references(() => rotations.id),
   slotIndex: integer('slot_index').notNull(),
   userId: integer('user_id').notNull().references(() => users.id),
-  duty: text('duty', { enum: ['service', 'watching', 'break'] }).notNull(),
+  duty: text('duty', { enum: ['service', 'watching', 'break', 'meeting'] }).notNull(),
 });
 
 export const themes = sqliteTable('themes', {

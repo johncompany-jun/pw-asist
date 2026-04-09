@@ -28,6 +28,7 @@ const dutyOptions = [
   { value: 'service', label: '奉仕', color: 'bg-violet-600/20 text-violet-300 border-violet-500/40' },
   { value: 'watching', label: '見守り', color: 'bg-blue-600/20 text-blue-300 border-blue-500/40' },
   { value: 'break', label: '休憩', color: 'bg-zinc-700 text-zinc-400 border-zinc-600' },
+  { value: 'meeting', label: 'MTG', color: 'bg-amber-600/20 text-amber-300 border-amber-500/40' },
 ]
 
 const timeSlots = computed(() => {
@@ -52,7 +53,7 @@ function getDuty(slotIndex: number, userId: number): string {
 function cycleDuty(slotIndex: number, userId: number) {
   if (!props.canEdit) return
   const current = getDuty(slotIndex, userId)
-  const duties = ['service', 'watching', 'break', '']
+  const duties = ['service', 'watching', 'break', 'meeting', '']
   const next = duties[(duties.indexOf(current) + 1) % duties.length]
   if (!grid.value[slotIndex]) grid.value[slotIndex] = {}
   if (next === '') delete grid.value[slotIndex][userId]

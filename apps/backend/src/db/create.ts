@@ -46,7 +46,7 @@ export function createDb(sqlite: Database) {
       rotation_id INTEGER NOT NULL REFERENCES rotations(id) ON DELETE CASCADE,
       slot_index INTEGER NOT NULL,
       user_id INTEGER NOT NULL REFERENCES users(id),
-      duty TEXT NOT NULL CHECK(duty IN ('service', 'watching', 'break')),
+      duty TEXT NOT NULL CHECK(duty IN ('service', 'watching', 'break', 'meeting')),
       UNIQUE(rotation_id, slot_index, user_id)
     );
     CREATE TABLE IF NOT EXISTS themes (
