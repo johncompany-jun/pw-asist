@@ -237,9 +237,11 @@ watch(() => props.assignedUsers, (users) => {
     <div v-else class="text-zinc-500 text-sm">開始・終了時刻と間隔を設定してください。</div>
 
     <!-- 凡例 -->
-    <div class="flex gap-3 text-xs">
-      <span v-for="d in dutyOptions" :key="d.value" :class="['px-2 py-0.5 rounded border', d.color]">{{ d.label }}</span>
-      <span class="text-zinc-500">クリックで切り替え（責任者のみ）</span>
+    <div class="flex flex-col gap-1 text-xs">
+      <div class="flex flex-wrap gap-2">
+        <span v-for="d in dutyOptions" :key="d.value" :class="['px-2 py-0.5 rounded border whitespace-nowrap', d.color]">{{ d.label }}</span>
+      </div>
+      <span class="text-zinc-500 text-right">クリックで切り替え（責任者のみ）</span>
     </div>
   </div>
 </template>
