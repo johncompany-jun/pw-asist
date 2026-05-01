@@ -158,6 +158,9 @@ watch([() => props.schedules, () => props.spots, () => props.users], buildKanban
         <VueDraggable
           v-model="kanbanColumns[0].users"
           group="users"
+          :delay="200"
+          :delay-on-touch-only="true"
+          :touch-start-threshold="5"
           class="flex flex-col gap-1.5 overflow-y-auto min-h-20 max-h-[calc(100vh-280px)] p-2 rounded-b-xl border border-t-0 bg-zinc-800/50 border-zinc-700"
         >
           <div
@@ -191,6 +194,9 @@ watch([() => props.schedules, () => props.spots, () => props.users], buildKanban
           <VueDraggable
             v-model="col.users"
             group="users"
+            :delay="200"
+            :delay-on-touch-only="true"
+            :touch-start-threshold="5"
             :class="[
               'flex flex-col gap-1.5 flex-1 min-h-20 p-2 rounded-b-xl border border-t-0',
               col.spotId === null ? 'bg-red-500/5 border-red-500/30' : 'bg-violet-600/5 border-violet-500/30'
@@ -225,6 +231,6 @@ watch([() => props.schedules, () => props.spots, () => props.users], buildKanban
       </div>
     </div>
 
-    <p class="text-xs text-zinc-500">ユーザーカードをドラッグしてスポットを変更。★ で責任者を設定。完了後「保存」を押してください。</p>
+    <p class="text-xs text-zinc-500">カードを長押し(スマホ)またはドラッグしてスポットを変更。★ で責任者を設定。完了後「保存」を押してください。</p>
   </div>
 </template>
