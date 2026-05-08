@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useAuth } from './store/auth'
+import { useApi, API } from './composables/useApi'
 import { currentView } from './store/nav'
 import Login from './pages/Login.vue'
 import Dashboard from './pages/Dashboard.vue'
@@ -14,7 +15,13 @@ import VacationRequest from './pages/VacationRequest.vue'
 import Sidebar from './components/Sidebar.vue'
 
 const { state, logout } = useAuth()
+const { authHeaders } = useApi()
 const sidebarOpen = ref(false)
+
+onMounted(() => {
+  if (!state.token) return
+  fetch(`${API}/api/me`, { headers: authHeaders() }).catch(() => {})
+})
 
 const pageTitle = computed(() => {
   const titles: Record<string, string> = {
