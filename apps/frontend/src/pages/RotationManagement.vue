@@ -185,7 +185,7 @@ onMounted(init)
         <textarea
           v-model="notifyMessage"
           placeholder="メッセージ（任意）"
-          rows="4"
+          rows="8"
           class="w-full px-3 py-2 bg-zinc-800 border border-zinc-700 rounded-lg text-white text-sm placeholder-zinc-500 focus:outline-none focus:border-violet-500 resize-none transition-colors"
         />
         <div v-if="notifyAdmins.length > 0" class="mt-3">

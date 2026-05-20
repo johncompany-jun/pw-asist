@@ -13,8 +13,9 @@ export function useNotify(rotationId: () => number | undefined, selectedDate: ()
 
   async function open() {
     const [, month, day] = selectedDate().split('-').map(Number)
+    const rotationUrl = `${window.location.origin}/#rotation`
     message.value = `親愛なる兄弟姉妹へ\n\n${userName()}でございます。\n${month}月${day}日のローテーションについてご連絡します。\nどうぞよろしくお願いします。
-    \n\n当日のローテーションの確認はこちら:\nhttps://pw-assistant.com/#rotation`
+    \n\n当日のローテーションの確認はこちら:\n${rotationUrl}\n\nご自身のメールアドレスとパスワードでログインして確認いただけます。\n\n使い方は\n\nhttps://drive.google.com/file/d/1TyMTbQ8bip8TozJl4LYp7mcZCN6__2TE/view?usp=drive_link\n\nからご覧ください`
     selectedAdminIds.value = []
     try {
       const res = await fetch(`${API}/api/users/admins`, { headers: auth() })

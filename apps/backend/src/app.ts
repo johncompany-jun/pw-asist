@@ -71,35 +71,48 @@ export function createApp(corsOrigin?: string, resendApiKey?: string, resendFrom
       return c.json({ message: 'メール送信が設定されていません' }, 500)
     }
 
-    let ccEmails: string[] | undefined
+    let ccEmails: string[] = []
     if (Array.isArray(ccAdminIds) && ccAdminIds.length > 0) {
       const allUsers = await UserService.findAll()
-      const memberIds = new Set(members.map(m => m.id))
+      const memberIds = new Set(members.map((m: any) => m.id))
       ccEmails = allUsers
-        .filter(u => u.isAdmin && ccAdminIds.includes(u.id) && !memberIds.has(u.id))
-        .map(u => u.email)
-      if (ccEmails.length === 0) ccEmails = undefined
+        .filter((u: any) => u.isAdmin && ccAdminIds.includes(u.id) && !memberIds.has(u.id))
+        .map((u: any) => u.email)
     }
 
-    const body: any = {
-      from: resendFromEmail,
-      to: members.map(m => m.email),
-      subject: `【SMPW FA】${rotation.date} [${rotation.spotName}] ローテーション`,
-      text: `${message ? message + '\n\n' : ''}---\n送信者: ${payload.name}\n※このメールは送信専用です。返信はできませんのでご了承ください。`,
+    const subject = `【SMPW FA】${rotation.date} [${rotation.spotName}] ローテーション`
+    const text = `${message ? message + '\n\n' : ''}---\n送信者: ${payload.name}\n※このメールは送信専用です。返信はできませんのでご了承ください。`
+
+    let success = 0
+    let failed = 0
+    for (let i = 0; i < members.length; i++) {
+      const body: any = {
+        from: resendFromEmail,
+        to: [members[i].email],
+        subject,
+        text,
+      }
+      if (i === 0 && ccEmails.length > 0) body.cc = ccEmails
+
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      })
+      if (res.ok) {
+        success++
+      } else {
+        failed++
+        const errBody = await res.text().catch(() => '')
+        console.error(`Resend failed for ${members[i].email}: ${res.status} ${errBody}`)
+      }
     }
-    if (ccEmails) body.cc = ccEmails
 
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) return c.json({ message: 'メール送信に失敗しました' }, 500)
-
-    return c.json({ count: members.length })
+    if (success === 0) return c.json({ message: 'メール送信に失敗しました' }, 500)
+    return c.json({ count: success, failed })
   })
 
   app.get('/api/my-rotations', authMiddleware, async (c) => {
